@@ -35,22 +35,43 @@ source venv/bin/activate  # Linux/macOS
 # OR
 venv\Scripts\activate     # Windows
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies using Poetry (ensure pyproject.toml is present)
+poetry install
 
-# Run the FastAPI/Starlette app with Uvicorn
-uvicorn main:app --host 0.0.0.0 --port 8003 --reload
+# Copy .env.example to .env and fill in your actual keys
+cp .env.example .env
+# Ensure .env contains:
+# ANTHROPIC_API_KEY
+# DESCOPE_PROJECT_KEY
+# DATABASE_URL
+# DESCOPE_CLIENT_ID
+# DESCOPE_CLIENT_SECRET
+# DESCOPE_TOKEN_URL
+
+# Run the CrimeAgent FastAPI app
+python3 -m src.agents.CrimeAgent
+
+# Option 2: Run using Docker image
+# --------------------------------
+# Pull the pre-built CrimeAgent Docker image
+docker pull ghcr.io/sohansouri47/crime_agent:1.0.0
+
+# Run the container (make sure your .env is configured)
+docker run --name crime_agent \
+  --env-file .env \
+  -p 8003:8003 \
+  ghcr.io/sohansouri47/crime_agent:1.0.0
 ```
 
 Set environment variables in `.env`:
 
 ```env
-REDIS_URL=redis://localhost:6379/0
-DESCOPE_CLIENT_ID=<your_client_id>
-DESCOPE_CLIENT_SECRET=<your_client_secret>
-DESCOPE_PROJECT_KEY=<your_project_key>
-DESCOPE_TOKEN_URL=<descope_token_url>
-CLAUDE_API_KEY=<CLAUDE_KEY>
+# ANTHROPIC_API_KEY
+# DESCOPE_PROJECT_KEY
+# DATABASE_URL
+# DESCOPE_CLIENT_ID
+# DESCOPE_CLIENT_SECRET
+# DESCOPE_TOKEN_URL
 ```
 
 ---
@@ -61,7 +82,7 @@ After activating your virtual environment:
 
 ```bash
 # Run the FastAPI/Starlette app with Uvicorn
-uvicorn main:app --host 0.0.0.0 --port 8003 --reload
+python3 -m src.agents.CrimeAgent
 ```
 
 **Parameters:**
@@ -84,3 +105,4 @@ uvicorn main:app --host 0.0.0.0 --port 8003 --reload
 * M2M token generation using Descope OAuth2 `client_credentials` grant.
 * Redis caching of tokens to avoid repeated authentication requests.
 * Automatic handling of token expiration with a buffer.
+
